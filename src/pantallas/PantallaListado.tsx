@@ -1,0 +1,156 @@
+import React, { useEffect, useState } from 'react';
+import { obtenerFuenteDatos } from '../datos';
+import type { Compra, Funcion } from '../dominio/modelos';
+import { Badge } from '../componentes/Badge';
+
+export const PantallaListado: React.FC = () => {
+  const [compras, setCompras] = useState<Compra[]>([]);
+  const [funciones, setFunciones] = useState<Funcion[]>([]);
+  const fuente = obtenerFuenteDatos();
+
+  const cargarDatos = async () => {
+    try {
+      const dataCompras = await fuente.listarCompras?.();
+      if (dataCompras) setCompras(dataCompras);
+
+      const dataFunciones = await fuente.listarFunciones();
+      if (dataFunciones) setFunciones(dataFunciones);
+    } catch (err) {
+      console.error("Error al cargar datos", err);
+    }
+  };
+
+  useEffect(() => {
+    cargarDatos();
+  }, []);
+
+  const handleCancelar = async (id: number) => {
+    try {
+      await fuente.cancelarCompra?.(id);
+      cargarDatos();
+    } catch (err) {
+      console.error("Error al cancelar la compra", err);
+    }
+  };
+
+  const handleMarcarUsada = async (id: number) => {
+    try {
+      const fuenteCualquiera = fuente as any;
+      if (fuenteCualquiera.marcarUsada) {
+        await fuenteCualquiera.marcarUsada(id);
+      } else if (fuenteCualquiera.actualizarEstadoCompra) {
+        await fuenteCualquiera.actualizarEstadoCompra(id, 'USADA');
+      }
+      cargarDatos();
+    } catch (err) {
+      console.error("Error al marcar como usada", err);
+    }
+  };
+
+  return (
+    <div className="cine-section" style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+      {/* Sección 1: Compras */}
+      <div>
+        <h3 className="text-lg font-bold mb-4">Compras</h3>
+        <div className="overflow-x-auto">
+          <table className="cine-tabla">
+            <thead>
+              <tr>
+                <th>Cliente</th>
+                <th>Función</th>
+                <th>Cant.</th>
+                <th>Total</th>
+                <th>Estado</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              {compras.map((c) => {
+                const nombreCliente = (c as any).cliente?.nombre || (c as any).nombreCliente || `Cliente #${c.clienteId}`;
+                const nombreFuncion = (c as any).funcion?.nombre || (c as any).funcion?.titulo || `Función #${c.funcionId}`;
+                const totalSeguro = Number(c.total || 0);
+                const estado = (c.estado || 'PENDIENTE').toUpperCase();
+
+                return (
+                  <tr key={c.id}>
+                    <td>{nombreCliente}</td>
+                    <td>{nombreFuncion}</td>
+                    <td>{c.cantidad}</td>
+                    <td>${totalSeguro.toFixed(2)}</td>
+                    <td>
+                      <span className={`cine-badge cine-badge-${estado.toLowerCase()}`}>
+                        {estado}
+                      </span>
+                    </td>
+                    <td>
+                      {estado === 'PENDIENTE' ? (
+                        <div style={{ display: 'flex', gap: '6px' }}>
+                          <button 
+                            onClick={() => handleMarcarUsada(c.id)}
+                            style={{ 
+                              background: '#e0f2fe', 
+                              color: '#0369a1', 
+                              border: 'none', 
+                              padding: '4px 8px', 
+                              borderRadius: '4px', 
+                              cursor: 'pointer', 
+                              fontSize: '12px',
+                              fontWeight: 'bold'
+                            }}
+                          >
+                            Usar
+                          </button>
+                          <button 
+                            onClick={() => handleCancelar(c.id)}
+                            className="cine-btn-danger"
+                          >
+                            Cancelar
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="cine-texto-muted" style={{ fontSize: '12px' }}>
+                          {estado === 'CANCELADA' ? '2 entradas repuestas a la disponibilidad' : 'No disponible'}
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <hr style={{ border: '0', borderTop: '1px solid #e2e8f0' }} />
+
+      {/* Sección 2: Catálogo de Funciones */}
+      <div>
+        <h3 className="text-lg font-bold mb-4">Catálogo de funciones</h3>
+        <div className="overflow-x-auto">
+          <table className="cine-tabla">
+            <thead>
+              <tr>
+                <th>Función</th>
+                <th>Precio</th>
+                <th>Disponibles</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              {funciones.map((f) => (
+                <tr key={f.id}>
+                  <td>{f.titulo}</td>
+                  <td>${Number(f.precio || (f as any).precioUnitario || 0).toFixed(2)}</td>
+                  <td>{f.disponibles}</td>
+                  <td>
+                    <Badge estado={f.estado} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+};

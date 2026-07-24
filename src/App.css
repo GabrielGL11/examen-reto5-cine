@@ -1,0 +1,56 @@
+body {
+  background-color: #f3f4f6;
+  font-family: system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 20px;
+}
+
+/* Contenedor general de la tarjeta de la aplicación */
+.cine-container {
+  max-width: 900px;
+  margin: 40px auto;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+}
+
+/* Barra superior oscura (Cine Estrella / Boletería) */
+.cine-header {
+  background-color: #1e2530;
+  color: #ffffff;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cine-header h1 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.cine-header span {
+  font-size: 14px;
+  color: #9ca3af;
+  cursor: pointer;
+}
+
+.cine-header span:hover {
+  color: #ffffff;
+}
+
+/* Contenido de las pantallas */
+.cine-content {
+  padding: 24px;
+}
+
+.cine-content h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-top: 0;
+  margin-bottom: 16px;
+}

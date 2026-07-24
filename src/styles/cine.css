@@ -1,0 +1,208 @@
+body {
+  background-color: #f1f5f9;
+  font-family: system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 40px 20px;
+}
+
+.cine-card {
+  max-width: 950px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e2e8f0;
+}
+
+.cine-header {
+  background-color: #1e2530;
+  color: #ffffff;
+  padding: 18px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cine-header h1 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  color: #ffffff;
+}
+
+.cine-body {
+  padding: 24px;
+}
+
+.cine-body h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+/* Tabla */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+th {
+  background-color: #f1f5f9;
+  color: #334155;
+  padding: 12px 16px;
+  font-weight: 600;
+  font-size: 14px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+  font-size: 14px;
+}
+
+/* ============================================================================
+   ESTILOS DE FORMULARIO Y REGISTRO DE COMPRA
+   ============================================================================ */
+
+.cine-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.cine-formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.cine-campo {
+  display: flex;
+  flex-direction: column;
+}
+
+.cine-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 6px;
+}
+
+.cine-requerido {
+  color: #ef4444;
+}
+
+.cine-select,
+.cine-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  font-size: 14px;
+  background-color: #ffffff;
+  color: #1e293b;
+  box-sizing: border-box;
+}
+
+.cine-select-flex {
+  flex: 1;
+}
+
+.cine-grupo-horizontal {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.cine-pista {
+  display: block;
+  font-size: 13px;
+  color: #0ea5e9;
+  margin-top: 6px;
+}
+
+.cine-error-texto {
+  color: #dc2626;
+  font-size: 12px;
+  display: block;
+  margin-top: 4px;
+}
+
+/* Botones */
+.cine-btn-primario {
+  background-color: #0ea5e9;
+  color: #ffffff;
+  padding: 12px 20px;
+  border-radius: 6px;
+  border: none;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: background-color 0.2s;
+}
+
+.cine-btn-primario:disabled {
+  background-color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.cine-btn-secundario {
+  background-color: #ffffff;
+  color: #0ea5e9;
+  border: 1px solid #0ea5e9;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* Tarjeta del Total */
+.cine-resumen-box {
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.cine-resumen-total {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.cine-resumen-descuento {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+/* Mensajes y Alertas */
+.cine-alerta-error {
+  color: #dc2626;
+  font-size: 14px;
+  margin-bottom: 16px;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  padding: 12px;
+  border-radius: 6px;
+}
+
+.cine-mensaje-exito {
+  font-size: 14px;
+  color: #059669;
+  margin-top: 16px;
+  font-weight: 600;
+}
+
+.cine-card.cine-card-anancha {
+  max-width: 1050px;
+}
