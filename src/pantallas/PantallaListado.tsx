@@ -6,6 +6,7 @@ import { Badge } from '../componentes/Badge';
 export const PantallaListado: React.FC = () => {
   const [compras, setCompras] = useState<Compra[]>([]);
   const [funciones, setFunciones] = useState<Funcion[]>([]);
+  const [clientes, setClientes] = useState<any[]>([]);
   const fuente = obtenerFuenteDatos();
 
   const cargarDatos = async () => {
@@ -15,6 +16,9 @@ export const PantallaListado: React.FC = () => {
 
       const dataFunciones = await fuente.listarFunciones();
       if (dataFunciones) setFunciones(dataFunciones);
+
+      const dataClientes = await fuente.listarClientes?.();
+      if (dataClientes) setClientes(dataClientes);
     } catch (err) {
       console.error("Error al cargar datos", err);
     }
@@ -35,13 +39,14 @@ export const PantallaListado: React.FC = () => {
 
   const handleMarcarUsada = async (id: number) => {
     try {
-      const fuenteCualquiera = fuente as any;
-      if (fuenteCualquiera.marcarUsada) {
-        await fuenteCualquiera.marcarUsada(id);
-      } else if (fuenteCualquiera.actualizarEstadoCompra) {
-        await fuenteCualquiera.actualizarEstadoCompra(id, 'USADA');
+      setCompras(prev => prev.map(c => c.id === id ? { ...c, estado: 'USADA' } : c));
+      const guardadas = JSON.parse(localStorage.getItem('compras') || '[]');
+      if (guardadas.length > 0) {
+        const actualizadas = guardadas.map((c: any) => c.id === id ? { ...c, estado: 'USADA' } : c);
+        localStorage.setItem('compras', JSON.stringify(actualizadas));
+      } else {
+        setCompras(prev => prev.map(c => c.id === id ? { ...c, estado: 'USADA' } : c));
       }
-      cargarDatos();
     } catch (err) {
       console.error("Error al marcar como usada", err);
     }
@@ -65,9 +70,12 @@ export const PantallaListado: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {compras.map((c) => {
-                const nombreCliente = (c as any).cliente?.nombre || (c as any).nombreCliente || `Cliente #${c.clienteId}`;
-                const nombreFuncion = (c as any).funcion?.nombre || (c as any).funcion?.titulo || `Función #${c.funcionId}`;
+              {compras.map((c: any) => {
+                const clienteObj = clientes.find(cl => cl.id === c.clienteId);
+                const funcionObj = funciones.find((f: any) => f.id === c.funcionId || f.id === c.funcion?.id);
+                
+                const nombreCliente = c.cliente?.nombre || clienteObj?.nombre || c.nombreCliente || `Cliente #${c.clienteId}`;
+                const nombreFuncion = c.funcion?.nombre || (funcionObj as any)?.nombre || (funcionObj as any)?.titulo || `Función #${c.funcionId}`;
                 const totalSeguro = Number(c.total || 0);
                 const estado = (c.estado || 'PENDIENTE').toUpperCase();
 
@@ -76,7 +84,23 @@ export const PantallaListado: React.FC = () => {
                     <td>{nombreCliente}</td>
                     <td>{nombreFuncion}</td>
                     <td>{c.cantidad}</td>
-                    <td>${totalSeguro.toFixed(2)}</td>
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span>${totalSeguro.toFixed(2)}</span>
+                        {c.descuentoAplicado && (
+                          <span style={{ 
+                            background: '#cffafe', 
+                            color: '#0e7490', 
+                            padding: '2px 6px', 
+                            borderRadius: '12px', 
+                            fontSize: '11px', 
+                            fontWeight: 'bold' 
+                          }}>
+                            -10%
+                          </span>
+                        )}
+                      </div>
+                    </td>
                     <td>
                       <span className={`cine-badge cine-badge-${estado.toLowerCase()}`}>
                         {estado}
@@ -107,9 +131,24 @@ export const PantallaListado: React.FC = () => {
                             Cancelar
                           </button>
                         </div>
+                      ) : estado === 'USADA' ? (
+                        <button 
+                          disabled
+                          style={{ 
+                            background: 'transparent', 
+                            border: '1px solid #cbd5e1', 
+                            color: '#94a3b8', 
+                            padding: '4px 8px', 
+                            borderRadius: '4px', 
+                            cursor: 'not-allowed', 
+                            fontSize: '12px' 
+                          }}
+                        >
+                          Cancelar
+                        </button>
                       ) : (
-                        <span className="cine-texto-muted" style={{ fontSize: '12px' }}>
-                          {estado === 'CANCELADA' ? '2 entradas repuestas a la disponibilidad' : 'No disponible'}
+                        <span className="cine-texto-muted" style={{ fontSize: '12px', fontStyle: 'italic' }}>
+                          2 entradas repuestas a la disponibilidad
                         </span>
                       )}
                     </td>
@@ -137,13 +176,13 @@ export const PantallaListado: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {funciones.map((f) => (
+              {funciones.map((f: any) => (
                 <tr key={f.id}>
-                  <td>{f.titulo}</td>
-                  <td>${Number(f.precio || (f as any).precioUnitario || 0).toFixed(2)}</td>
+                  <td>{f.titulo || f.nombre || f.pelicula || `Función #${f.id}`}</td>
+                  <td>${Number(f.precio || f.precioUnitario || 0).toFixed(2)}</td>
                   <td>{f.disponibles}</td>
                   <td>
-                    <Badge estado={f.estado} />
+                    <Badge estado={f.estado || f.status || 'ACTIVA'} />
                   </td>
                 </tr>
               ))}
