@@ -12,7 +12,14 @@ export const PantallaListado: React.FC = () => {
   const cargarDatos = async () => {
     try {
       const dataCompras = await fuente.listarCompras?.();
-      if (dataCompras) setCompras(dataCompras);
+      if (dataCompras) {
+        const guardadasLocal = JSON.parse(localStorage.getItem('compras_estado_local') || '{}');
+        const comprasConEstado = dataCompras.map((c: any) => ({
+          ...c,
+          estado: guardadasLocal[c.id] || c.estado
+        }));
+        setCompras(comprasConEstado);
+      }
 
       const dataFunciones = await fuente.listarFunciones();
       if (dataFunciones) setFunciones(dataFunciones);
@@ -31,6 +38,10 @@ export const PantallaListado: React.FC = () => {
   const handleCancelar = async (id: number) => {
     try {
       await fuente.cancelarCompra?.(id);
+      const guardadasLocal = JSON.parse(localStorage.getItem('compras_estado_local') || '{}');
+      delete guardadasLocal[id];
+      localStorage.setItem('compras_estado_local', JSON.stringify(guardadasLocal));
+      
       cargarDatos();
     } catch (err) {
       console.error("Error al cancelar la compra", err);
@@ -39,14 +50,11 @@ export const PantallaListado: React.FC = () => {
 
   const handleMarcarUsada = async (id: number) => {
     try {
+      const guardadasLocal = JSON.parse(localStorage.getItem('compras_estado_local') || '{}');
+      guardadasLocal[id] = 'USADA';
+      localStorage.setItem('compras_estado_local', JSON.stringify(guardadasLocal));
+
       setCompras(prev => prev.map(c => c.id === id ? { ...c, estado: 'USADA' } : c));
-      const guardadas = JSON.parse(localStorage.getItem('compras') || '[]');
-      if (guardadas.length > 0) {
-        const actualizadas = guardadas.map((c: any) => c.id === id ? { ...c, estado: 'USADA' } : c);
-        localStorage.setItem('compras', JSON.stringify(actualizadas));
-      } else {
-        setCompras(prev => prev.map(c => c.id === id ? { ...c, estado: 'USADA' } : c));
-      }
     } catch (err) {
       console.error("Error al marcar como usada", err);
     }
